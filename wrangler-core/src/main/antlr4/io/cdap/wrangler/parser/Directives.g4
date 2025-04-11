@@ -140,7 +140,12 @@ numberRange
  ;
 
 value
- : String | Number | Column | Bool
+ : String
+ | Number
+ | Column
+ | Bool
+ | BYTE_SIZE
+ | TIME_DURATION
  ;
 
 ecommand
@@ -253,6 +258,14 @@ Bool
  | 'false'
  ;
 
+BYTE_SIZE
+ : Number BYTE_UNIT
+ ;
+
+TIME_DURATION
+ : Number TIME_UNIT
+ ;
+
 Number
  : Int ('.' Digit*)?
  ;
@@ -280,20 +293,28 @@ EscapeSequence
    |   OctalEscape
    ;
 
-fragment
-OctalEscape
+fragment OctalEscape
    :   '\\' ('0'..'3') ('0'..'7') ('0'..'7')
    |   '\\' ('0'..'7') ('0'..'7')
    |   '\\' ('0'..'7')
    ;
 
-fragment
-UnicodeEscape
+fragment UnicodeEscape
    :   '\\' 'u' HexDigit HexDigit HexDigit HexDigit
    ;
 
-fragment
-   HexDigit : ('0'..'9'|'a'..'f'|'A'..'F') ;
+fragment HexDigit : ('0'..'9'|'a'..'f'|'A'..'F') ;
+
+fragment BYTE_UNIT
+ : [kKmMgGtT]? [bB]
+ ;
+
+fragment TIME_UNIT
+ : [mM][sS]
+ | [sS]
+ | [nN][sS]
+ | [uU][sS]
+ ;
 
 Comment
  : ('//' ~[\r\n]* | '/*' .*? '*/' | '--' ~[\r\n]* ) -> skip
