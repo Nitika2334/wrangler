@@ -1,0 +1,32 @@
+# Prompts Used for AI Assistance during Wrangler Enhancement Assignment
+
+## ByteSize and TimeDuration Classes
+1. "How do I implement a Java class that parses byte size strings like '10KB', '1.5MB' and returns the value in bytes?"
+2. "Give me a Java class that can parse duration strings like '10ms', '5s', '2m', '1h' and return the time in nanoseconds."
+
+## Grammar Modifications (ANTLR)
+3. "Help me write ANTLR grammar rules for BYTE_SIZE and TIME_DURATION tokens."
+4. "How to modify a value rule in ANTLR to accept byte and time duration formats using fragments?"
+
+## Visitor Updates for New Token Types
+5. "How do I implement visitByteSizeArg and visitTimeDurationArg in a custom ANTLR visitor?"
+
+## Directive Implementation
+6. "Help me implement a directive in Java that aggregates columns based on parsed ByteSize and TimeDuration values in CDAP Wrangler."
+7. "How can I store temporary values across multiple rows for aggregation in a Wrangler directive?"
+
+## Unit Tests
+8. "Write JUnit test cases for a class that parses strings like '2.5GB' and returns byte values."
+9. "How do I mock rows in Wrangler to test an aggregation directive that sums time and byte size values?"
+
+## Test Case and Recipe Pipeline
+10. "Give me sample usage of TestingRig in Wrangler to test a directive with aggregate logic."
+11. "How do I assert aggregated result values in unit tests for floating point outputs with tolerance?"
+
+## Troubleshooting Build & Checkstyle
+12. "How can I bypass checkstyle errors in Maven during testing?"
+13. "What does 'TokenGroup' in CDAP Wrangler do and how do I add custom token types to it?"
+
+## GitHub & Documentation
+14. "Generate a README section that explains how to use new ByteSize and TimeDuration parsers in CDAP Wrangler."
+
