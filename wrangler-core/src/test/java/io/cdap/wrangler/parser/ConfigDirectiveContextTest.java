@@ -35,64 +35,64 @@ import java.util.List;
 public class ConfigDirectiveContextTest {
 
   private static final String CONFIG = "{\n" +
-    "\t\"exclusions\" : [\n" +
-    "\t\t\"parse-as-csv\",\n" +
-    "\t\t\"parse-as-excel\",\n" +
-    "\t\t\"set\",\n" +
-    "\t\t\"invoke-http\",\n" +
-    "\t\t\"js-parser\"\n" +
-    "\t],\n" +
-    "\n" +
-    "\t\"aliases\" : {\n" +
-    "\t\t\"json-parser\" : \"parse-as-json\",\n" +
-    "\t\t\"js-parser\" : \"parse-as-json\"\n" +
-    "\t}\n" +
-    "}";
+      "\t\"exclusions\" : [\n" +
+      "\t\t\"parse-as-csv\",\n" +
+      "\t\t\"parse-as-excel\",\n" +
+      "\t\t\"set\",\n" +
+      "\t\t\"invoke-http\",\n" +
+      "\t\t\"js-parser\"\n" +
+      "\t],\n" +
+      "\n" +
+      "\t\"aliases\" : {\n" +
+      "\t\t\"json-parser\" : \"parse-as-json\",\n" +
+      "\t\t\"js-parser\" : \"parse-as-json\"\n" +
+      "\t}\n" +
+      "}";
 
   private static final String EMPTY = "{}";
 
   @Test(expected = RecipeException.class)
   public void testBasicExclude() throws Exception {
     String[] text = new String[] {
-      "parse-as-csv body , true"
+        "parse-as-csv body , true"
     };
 
     Gson gson = new Gson();
     DirectiveConfig config = gson.fromJson(CONFIG, DirectiveConfig.class);
 
     RecipeParser directives = new GrammarBasedParser(Contexts.SYSTEM, text,
-                                                     new CompositeDirectiveRegistry(SystemDirectiveRegistry.INSTANCE),
-                                                     new ConfigDirectiveContext(config));
+        new CompositeDirectiveRegistry(SystemDirectiveRegistry.INSTANCE),
+        new ConfigDirectiveContext(config));
     directives.parse();
   }
 
   @Test(expected = RecipeException.class)
   public void testAliasedAndExcluded() throws Exception {
     String[] text = new String[] {
-      "js-parser body"
+        "js-parser body"
     };
 
     Gson gson = new Gson();
     DirectiveConfig config = gson.fromJson(CONFIG, DirectiveConfig.class);
 
     RecipeParser directives = new GrammarBasedParser(Contexts.SYSTEM, text,
-                                                     new CompositeDirectiveRegistry(SystemDirectiveRegistry.INSTANCE),
-                                                     new ConfigDirectiveContext(config));
+        new CompositeDirectiveRegistry(SystemDirectiveRegistry.INSTANCE),
+        new ConfigDirectiveContext(config));
     directives.parse();
   }
 
   @Test
   public void testAliasing() throws Exception {
     String[] text = new String[] {
-      "json-parser :body;"
+        "json-parser :body;"
     };
 
     Gson gson = new Gson();
     DirectiveConfig config = gson.fromJson(CONFIG, DirectiveConfig.class);
 
     RecipeParser directives = new GrammarBasedParser(Contexts.SYSTEM, text,
-                                                     new CompositeDirectiveRegistry(SystemDirectiveRegistry.INSTANCE),
-                                                     new ConfigDirectiveContext(config));
+        new CompositeDirectiveRegistry(SystemDirectiveRegistry.INSTANCE),
+        new ConfigDirectiveContext(config));
     List<Directive> steps = directives.parse();
     Assert.assertEquals(1, steps.size());
   }
@@ -100,15 +100,15 @@ public class ConfigDirectiveContextTest {
   @Test(expected = RecipeException.class)
   public void testEmptyAliasingShouldFail() throws Exception {
     String[] text = new String[] {
-      "json-parser :body;"
+        "json-parser :body;"
     };
 
     Gson gson = new Gson();
     DirectiveConfig config = gson.fromJson(EMPTY, DirectiveConfig.class);
 
     RecipeParser directives = new GrammarBasedParser(Contexts.SYSTEM, text,
-                                                     new CompositeDirectiveRegistry(SystemDirectiveRegistry.INSTANCE),
-                                                     new ConfigDirectiveContext(config));
+        new CompositeDirectiveRegistry(SystemDirectiveRegistry.INSTANCE),
+        new ConfigDirectiveContext(config));
     List<Directive> steps = directives.parse();
     Assert.assertEquals(1, steps.size());
   }
@@ -116,15 +116,15 @@ public class ConfigDirectiveContextTest {
   @Test
   public void testWithNoAliasingNoExclusion() throws Exception {
     String[] text = new String[] {
-      "parse-as-json :body;"
+        "parse-as-json :body;"
     };
 
     Gson gson = new Gson();
     DirectiveConfig config = gson.fromJson(EMPTY, DirectiveConfig.class);
 
     RecipeParser directives = new GrammarBasedParser(Contexts.SYSTEM, text,
-                                                     new CompositeDirectiveRegistry(SystemDirectiveRegistry.INSTANCE),
-                                                     new ConfigDirectiveContext(config));
+        new CompositeDirectiveRegistry(SystemDirectiveRegistry.INSTANCE),
+        new ConfigDirectiveContext(config));
     List<Directive> steps = directives.parse();
     Assert.assertEquals(1, steps.size());
   }

@@ -1,17 +1,17 @@
 /*
- *  Copyright © 2017-2019 Cask Data, Inc.
+ * Copyright © 2024 Cask Data, Inc.
  *
- *  Licensed under the Apache License, Version 2.0 (the "License"); you may not
- *  use this file except in compliance with the License. You may obtain a copy of
- *  the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *  http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- *  Unless required by applicable law or agreed to in writing, software
- *  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- *  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
- *  License for the specific language governing permissions and limitations under
- *  the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package io.cdap.wrangler.parser;
@@ -38,7 +38,7 @@ public final class SyntaxErrorListener extends BaseErrorListener {
 
   @Override
   public void syntaxError(Recognizer<?, ?> recognizer, Object offendingSymbol, int line, int charPositionInLine,
-                          String msg, RecognitionException e) {
+      String msg, RecognitionException e) {
 
     Parser parser = (Parser) recognizer;
     String name = parser.getSourceName();
@@ -60,7 +60,7 @@ public final class SyntaxErrorListener extends BaseErrorListener {
           msg = "unexpected token found '" + ((NoViableAltException) e).getStartToken().getText() + "'";
         }
       }
-      String message = "At line " + line + ":" + charPositionInLine +  ": " + msg;
+      String message = "At line " + line + ":" + charPositionInLine + ": " + msg;
       errors.add(new SyntaxError(line, charPositionInLine, message, source));
       return;
     }
@@ -68,15 +68,15 @@ public final class SyntaxErrorListener extends BaseErrorListener {
     String offSymName = DirectivesLexer.VOCABULARY.getDisplayName(offSymbol.getType());
     String message = "At line " + line + ":" + charPositionInLine + " at " + offSymName.toLowerCase() + ": " + msg;
 
-//    StringBuilder sb = new StringBuilder(message);
-//    sb.append(", alternatives = {");
-//    for (int idx = lastError + 1; idx <= thisError; idx++) {
-//      Token token = tokens.get(idx);
-//      if (token.getChannel() != Token.HIDDEN_CHANNEL) {
-//        sb.append(token.getText()).append(",");
-//      }
-//    }
-//    sb.append("}");
+    // StringBuilder sb = new StringBuilder(message);
+    // sb.append(", alternatives = {");
+    // for (int idx = lastError + 1; idx <= thisError; idx++) {
+    // Token token = tokens.get(idx);
+    // if (token.getChannel() != Token.HIDDEN_CHANNEL) {
+    // sb.append(token.getText()).append(",");
+    // }
+    // }
+    // sb.append("}");
     lastError = thisError;
     errors.add(new SyntaxError(line, charPositionInLine, message, source));
   }

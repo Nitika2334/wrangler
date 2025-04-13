@@ -311,7 +311,6 @@
     </dependency>
   </dependencies>
 
-
   <build>
     <resources>
       <resource>
@@ -335,6 +334,7 @@
           </execution>
         </executions>
       </plugin>
+
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>buildnumber-maven-plugin</artifactId>
@@ -358,7 +358,40 @@
           </items>
         </configuration>
       </plugin>
+
+      <plugin>
+        <groupId>org.apache.rat</groupId>
+        <artifactId>apache-rat-plugin</artifactId>
+        <version>0.10</version>
+        <configuration>
+          <excludes>
+            <exclude>**/*.tokens</exclude>
+            <exclude>**/*.interp</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
+
+
+
+  <reporting>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.rat</groupId>
+        <artifactId>apache-rat-plugin</artifactId>
+        <version>0.10</version>
+        <configuration>
+          <excludes>
+            <exclude>**/*.tokens</exclude>
+            <exclude>**/*.interp</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+    </plugins>
+  </reporting>
+
+  
+
 
 </project>

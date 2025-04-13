@@ -1,17 +1,17 @@
 /*
- * Copyright © 2017-2019 Cask Data, Inc.
+ * Copyright © 2024 Cask Data, Inc.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License. You may obtain a copy of
- * the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
- * License for the specific language governing permissions and limitations under
- * the License.
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package io.cdap.wrangler.parser;
@@ -38,7 +38,8 @@ public final class UsageRegistry implements Serializable {
   private static final Logger LOG = LoggerFactory.getLogger(UsageRegistry.class);
 
   /**
-   * A {@link UsageEntry} defines the information about the directives that are available.
+   * A {@link UsageEntry} defines the information about the directives that are
+   * available.
    */
   public class UsageEntry {
     private final String directive;
@@ -84,7 +85,8 @@ public final class UsageRegistry implements Serializable {
   }
 
   /**
-   * Adds a class that extends from <code>AbstractDirective</code> to usage registry.
+   * Adds a class that extends from <code>AbstractDirective</code> to usage
+   * registry.
    *
    * @param classz representing an AbstractDirective</code> implementation.
    */
@@ -153,12 +155,12 @@ public final class UsageRegistry implements Serializable {
     // These are for directives that use other steps for executing.
     // we add them exclusively
     addUsage("set format", "set format csv <delimiter> <skip empty lines>",
-             "[DEPRECATED] Parses the predefined column as CSV. Use 'parse-as-csv' instead.");
+        "[DEPRECATED] Parses the predefined column as CSV. Use 'parse-as-csv' instead.");
     addUsage("format-unix-timestamp", "format-unix-timestamp <column> <format>",
-             "Formats a UNIX timestamp using the specified format");
+        "Formats a UNIX timestamp using the specified format");
     addUsage("filter-row-if-not-matched", "filter-row-if-not-matched <column> <regex>",
-             "Filters rows if the regex does not match");
+        "Filters rows if the regex does not match");
     addUsage("filter-row-if-false", "filter-row-if-false <condition>",
-             "Filters rows if the condition evaluates to false");
+        "Filters rows if the condition evaluates to false");
   }
 }
