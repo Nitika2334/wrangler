@@ -56,7 +56,6 @@ import io.cdap.wrangler.api.DirectiveParseException;
 import io.cdap.wrangler.api.EntityCountMetric;
 import io.cdap.wrangler.api.ErrorRecord;
 import io.cdap.wrangler.api.ExecutorContext;
-import io.cdap.wrangler.api.RecipeException;
 import io.cdap.wrangler.api.RecipeParser;
 import io.cdap.wrangler.api.RecipePipeline;
 import io.cdap.wrangler.api.RecipeSymbol;
@@ -100,8 +99,10 @@ import static io.cdap.wrangler.metrics.Constants.Tags.APP_ENTITY_TYPE_NAME;
 /**
  * Wrangler - A interactive tool for data cleansing and transformation.
  *
- * This plugin is an implementation of the transformation that are performed in the
- * backend for operationalizing all the interactive wrangling that is being performed
+ * This plugin is an implementation of the transformation that are performed in
+ * the
+ * backend for operationalizing all the interactive wrangling that is being
+ * performed
  * by the user.
  */
 @Plugin(type = "transform")
@@ -152,7 +153,8 @@ public class Wrangler extends Transform<StructuredRecord, StructuredRecord> impl
   // on error strategy
   private String onErrorStrategy;
 
-  // This is used only for tests, otherwise this is being injected by the ingestion framework.
+  // This is used only for tests, otherwise this is being injected by the
+  // ingestion framework.
   public Wrangler(Config config) {
     this.config = config;
   }
@@ -161,11 +163,12 @@ public class Wrangler extends Transform<StructuredRecord, StructuredRecord> impl
    * Configures the plugin during deployment of the pipeline that uses the plugin.
    *
    * <p>
-   *   <ul>
-   *     <li>Parses the directives configured. If there are any issues they will highlighted during deployment</li>
-   *     <li>Input schema is validated.</li>
-   *     <li>Compiles pre-condition expression.</li>
-   *   </ul>
+   * <ul>
+   * <li>Parses the directives configured. If there are any issues they will
+   * highlighted during deployment</li>
+   * <li>Input schema is validated.</li>
+   * <li>Compiles pre-condition expression.</li>
+   * </ul>
    * </p>
    */
   @Override
@@ -176,7 +179,7 @@ public class Wrangler extends Transform<StructuredRecord, StructuredRecord> impl
     try {
       Schema iSchema = configurer.getStageConfigurer().getInputSchema();
       if (!config.containsMacro(Config.NAME_FIELD) && !(config.getField().equals("*")
-        || config.getField().equals("#"))) {
+          || config.getField().equals("#"))) {
         validateInputSchema(iSchema, collector);
       }
 
@@ -214,13 +217,13 @@ public class Wrangler extends Transform<StructuredRecord, StructuredRecord> impl
           Set<String> dynamicDirectives = symbols.getLoadableDirectives();
           for (String directive : dynamicDirectives) {
             Object directivePlugin = configurer.usePlugin(Directive.TYPE, directive, directive,
-                                                          PluginProperties.builder().build());
+                PluginProperties.builder().build());
             if (directivePlugin == null) {
               collector.addFailure(
-                String.format("User Defined Directive '%s' is not deployed or is not available.", directive),
-                "Ensure the directive is deployed.")
-                .withPluginNotFound(directive, directive, Directive.TYPE)
-                .withConfigElement(Config.NAME_UDD, directive);
+                  String.format("User Defined Directive '%s' is not deployed or is not available.", directive),
+                  "Ensure the directive is deployed.")
+                  .withPluginNotFound(directive, directive, Directive.TYPE)
+                  .withConfigElement(Config.NAME_UDD, directive);
             }
           }
           // If the 'directives' contains macro, then we would not attempt to compile
@@ -237,10 +240,10 @@ public class Wrangler extends Transform<StructuredRecord, StructuredRecord> impl
                 DirectiveInfo directiveInfo = registry.get("", directive);
                 if (directiveInfo == null && !dynamicDirectives.contains(directive)) {
                   collector.addFailure(
-                    String.format("Wrangler plugin has a directive '%s' that does not exist in system or " +
-                                    "user space.", directive),
-                    "Ensure the directive is loaded or the directive name is correct.")
-                    .withConfigProperty(Config.NAME_DIRECTIVES);
+                      String.format("Wrangler plugin has a directive '%s' that does not exist in system or " +
+                          "user space.", directive),
+                      "Ensure the directive is loaded or the directive name is correct.")
+                      .withConfigProperty(Config.NAME_DIRECTIVES);
                 }
               }
             }
@@ -248,16 +251,19 @@ public class Wrangler extends Transform<StructuredRecord, StructuredRecord> impl
         }
       } catch (CompileException e) {
         collector.addFailure(
-          String.format("Compilation error occurred, %s: %s ", e.getClass().getName(),
-            e.getMessage()), null);
+            String.format("Compilation error occurred, %s: %s ", e.getClass().getName(),
+                e.getMessage()),
+            null);
       } catch (DirectiveParseException e) {
         collector.addFailure(
-          String.format("Error parsing directive, %s: %s", e.getClass().getName(),
-            e.getMessage()), null);
+            String.format("Error parsing directive, %s: %s", e.getClass().getName(),
+                e.getMessage()),
+            null);
       } catch (DirectiveLoadException e) {
         collector.addFailure(
-          String.format("Error loading directive, %s: %s", e.getClass().getName(),
-            e.getMessage()), null);
+            String.format("Error loading directive, %s: %s", e.getClass().getName(),
+                e.getMessage()),
+            null);
       }
 
       // Based on the configuration create output schema.
@@ -267,21 +273,22 @@ public class Wrangler extends Transform<StructuredRecord, StructuredRecord> impl
         }
       } catch (IOException e) {
         collector.addFailure(
-          String.format("Invalid output schema %s: %s", e.getClass().getName(), e.getMessage()),
-          null).withConfigProperty(Config.NAME_SCHEMA).withStacktrace(e.getStackTrace());
+            String.format("Invalid output schema %s: %s", e.getClass().getName(), e.getMessage()),
+            null).withConfigProperty(Config.NAME_SCHEMA).withStacktrace(e.getStackTrace());
       }
 
-      // Check if jexl pre-condition is not null or empty and if so compile expression.
+      // Check if jexl pre-condition is not null or empty and if so compile
+      // expression.
       if (!config.containsMacro(Config.NAME_PRECONDITION) && !config.containsMacro(
-        Config.NAME_PRECONDITION_LANGUAGE)) {
+          Config.NAME_PRECONDITION_LANGUAGE)) {
         if (PRECONDITION_LANGUAGE_JEXL.equalsIgnoreCase(config.getPreconditionLanguage())
-          && checkPreconditionNotEmpty(false)) {
+            && checkPreconditionNotEmpty(false)) {
           try {
             new Precondition(config.getPreconditionJEXL());
           } catch (PreconditionException e) {
             collector.addFailure(String.format("Error compiling precondition expression, %s: %s",
                 e.getClass().getName(), e.getMessage()), null)
-              .withConfigProperty(Config.NAME_PRECONDITION);
+                .withConfigProperty(Config.NAME_PRECONDITION);
           }
         }
       }
@@ -297,7 +304,8 @@ public class Wrangler extends Transform<StructuredRecord, StructuredRecord> impl
   }
 
   /**
-   * {@code prepareRun} is invoked by the client once before the job is submitted, but after the resolution
+   * {@code prepareRun} is invoked by the client once before the job is submitted,
+   * but after the resolution
    * of macros if there are any defined.
    *
    * @param context a instance {@link StageSubmitterContext}
@@ -317,9 +325,10 @@ public class Wrangler extends Transform<StructuredRecord, StructuredRecord> impl
     // After input and output schema are validated, it's time to extract
     // all the fields from input and output schema.
     Set<String> input = inputSchema.getFields().stream()
-      .map(Schema.Field::getName).collect(Collectors.toSet());
+        .map(Schema.Field::getName).collect(Collectors.toSet());
 
-    // If there is input schema, but if there is no output schema, there is nothing to apply
+    // If there is input schema, but if there is no output schema, there is nothing
+    // to apply
     // transformations on. So, there is no point in generating field level lineage.
     Schema outputSchema = context.getOutputSchema();
     if (outputSchema == null || outputSchema.getFields() == null || outputSchema.getFields().isEmpty()) {
@@ -329,7 +338,7 @@ public class Wrangler extends Transform<StructuredRecord, StructuredRecord> impl
     // After input and output schema are validated, it's time to extract
     // all the fields from input and output schema.
     Set<String> output = outputSchema.getFields().stream()
-      .map(Schema.Field::getName).collect(Collectors.toSet());
+        .map(Schema.Field::getName).collect(Collectors.toSet());
 
     // Parse the recipe and extract all the instances of directives
     // to be processed for extracting lineage.
@@ -349,7 +358,8 @@ public class Wrangler extends Transform<StructuredRecord, StructuredRecord> impl
   }
 
   /**
-   * Initialize the wrangler by parsing the directives and creating the runtime context.
+   * Initialize the wrangler by parsing the directives and creating the runtime
+   * context.
    *
    * @param context framework context being passed.
    */
@@ -375,10 +385,11 @@ public class Wrangler extends Transform<StructuredRecord, StructuredRecord> impl
           errorMessage, ErrorType.USER);
     }
 
-    // Check if jexl pre-condition is not null or empty and if so compile expression.
+    // Check if jexl pre-condition is not null or empty and if so compile
+    // expression.
     if (!config.containsMacro(Config.NAME_PRECONDITION_LANGUAGE)) {
       if (PRECONDITION_LANGUAGE_JEXL.equalsIgnoreCase(config.getPreconditionLanguage())
-        && checkPreconditionNotEmpty(false)) {
+          && checkPreconditionNotEmpty(false)) {
         try {
           condition = new Precondition(config.getPreconditionJEXL());
         } catch (Exception e) {
@@ -419,9 +430,10 @@ public class Wrangler extends Transform<StructuredRecord, StructuredRecord> impl
   }
 
   /**
-   * Transforms the input record by applying directives on the record being passed.
+   * Transforms the input record by applying directives on the record being
+   * passed.
    *
-   * @param input record to be transformed.
+   * @param input   record to be transformed.
    * @param emitter to collect all the output of the transformation.
    * @throws Exception thrown if there are any issue with the transformation.
    */
@@ -478,19 +490,19 @@ public class Wrangler extends Transform<StructuredRecord, StructuredRecord> impl
     } catch (Exception e) {
       getContext().getMetrics().count("failure", 1);
       if (onErrorStrategy.equalsIgnoreCase(ON_ERROR_PROCEED)) {
-        // Emit error record, if the Error flattener or error handlers are not connected, then
+        // Emit error record, if the Error flattener or error handlers are not
+        // connected, then
         // the record is automatically omitted.
         emitter.emitError(new InvalidEntry<>(0, e.getMessage(), input));
         return;
       }
       if (onErrorStrategy.equalsIgnoreCase(ON_ERROR_FAIL_PIPELINE)) {
         emitter.emitAlert(ImmutableMap.of(
-          "stage", getContext().getStageName(),
-          "code", String.valueOf(1),
-          "message", String.format("Stopping pipeline stage %s on error %s",
-                                   getContext().getStageName(), e.getMessage()),
-          "value", String.valueOf(errorCounter)
-        ));
+            "stage", getContext().getStageName(),
+            "code", String.valueOf(1),
+            "message", String.format("Stopping pipeline stage %s on error %s",
+                getContext().getStageName(), e.getMessage()),
+            "value", String.valueOf(errorCounter)));
         String errorReason = "Error occurred while processing input data, possibly due to invalid "
             + "transformation or schema mismatch.";
         String errorMessage = String.format("Pipeline failed at stage:%s, %s: %s",
@@ -498,7 +510,8 @@ public class Wrangler extends Transform<StructuredRecord, StructuredRecord> impl
         throw WranglerErrorUtil.getProgramFailureExceptionDetailsFromChain(e, errorReason,
             errorMessage, ErrorType.UNKNOWN);
       }
-      // If it's 'skip-on-error' we continue processing and don't emit any error records.
+      // If it's 'skip-on-error' we continue processing and don't emit any error
+      // records.
       return;
     } finally {
       getContext().getMetrics().gauge("process.time", System.nanoTime() - start);
@@ -516,8 +529,10 @@ public class Wrangler extends Transform<StructuredRecord, StructuredRecord> impl
           if (wObject instanceof String) {
             builder.convertAndSet(field.getName(), (String) wObject);
           } else {
-            // No need to use specific methods for fields of logical type - timestamp, date and time. This is because
-            // the wObject should already have correct values for corresponding primitive types.
+            // No need to use specific methods for fields of logical type - timestamp, date
+            // and time. This is because
+            // the wObject should already have correct values for corresponding primitive
+            // types.
             builder.set(field.getName(), wObject);
           }
         }
@@ -530,7 +545,7 @@ public class Wrangler extends Transform<StructuredRecord, StructuredRecord> impl
    * Validates input schema.
    *
    * @param inputSchema configured for the plugin
-   * @param collector failure collector
+   * @param collector   failure collector
    */
   private void validateInputSchema(@Nullable Schema inputSchema, FailureCollector collector) {
     if (inputSchema != null) {
@@ -538,7 +553,7 @@ public class Wrangler extends Transform<StructuredRecord, StructuredRecord> impl
       Schema.Field inputSchemaField = inputSchema.getField(config.getField());
       if (inputSchemaField == null) {
         collector.addFailure(String.format("Field '%s' must be present in input schema.", config.getField()), null)
-          .withConfigProperty(Config.NAME_FIELD);
+            .withConfigProperty(Config.NAME_FIELD);
       }
     }
   }
@@ -553,37 +568,38 @@ public class Wrangler extends Transform<StructuredRecord, StructuredRecord> impl
     }
     if (Strings.isNullOrEmpty(precondition)) {
       collector.addFailure(String.format("%s must be present.", language),
-                           null)
-        .withConfigProperty(field);
+          null)
+          .withConfigProperty(field);
     }
   }
 
   private void validateSQLModeDirectives(FailureCollector collector) {
     if (!Strings.isNullOrEmpty(config.getDirectives())) {
       collector.addFailure("Directives are not supported for precondition of type SQL", null)
-        .withConfigProperty(Config.NAME_DIRECTIVES);
+          .withConfigProperty(Config.NAME_DIRECTIVES);
     }
 
     if (!Strings.isNullOrEmpty(config.getUDDs())) {
       collector.addFailure("UDDs are not supported for precondition of type SQL", null)
-        .withConfigProperty(Config.NAME_UDD);
+          .withConfigProperty(Config.NAME_UDD);
     }
   }
 
   private boolean checkPreconditionNotEmpty(Boolean isConditionSQL) {
     if (!isConditionSQL && !Strings.isNullOrEmpty(config.getPreconditionJEXL())
-      && !config.getPreconditionJEXL().trim().isEmpty()) {
+        && !config.getPreconditionJEXL().trim().isEmpty()) {
       return true;
     }
     if (isConditionSQL && !Strings.isNullOrEmpty(config.getPreconditionSQL())
-      && !config.getPreconditionSQL().trim().isEmpty()) {
+        && !config.getPreconditionSQL().trim().isEmpty()) {
       return true;
     }
     return false;
   }
 
   /**
-   * This method creates a {@link CompositeDirectiveRegistry} and initializes the {@link RecipeParser}
+   * This method creates a {@link CompositeDirectiveRegistry} and initializes the
+   * {@link RecipeParser}
    * with {@link NoOpDirectiveContext}
    *
    * @param context
@@ -619,7 +635,7 @@ public class Wrangler extends Transform<StructuredRecord, StructuredRecord> impl
   @Override
   public Relation transform(RelationalTranformContext relationalTranformContext, Relation relation) {
     if (PRECONDITION_LANGUAGE_SQL.equalsIgnoreCase(config.getPreconditionLanguage())
-            && checkPreconditionNotEmpty(true)) {
+        && checkPreconditionNotEmpty(true)) {
 
       if (!Feature.WRANGLER_PRECONDITION_SQL.isEnabled(relationalTranformContext)) {
         String errorReason = "SQL Precondition feature is not available";
@@ -648,7 +664,8 @@ public class Wrangler extends Transform<StructuredRecord, StructuredRecord> impl
    * This method emits all metrics for the given list of directives
    *
    * @param directives a list of Wrangler directives
-   * @param metrics CDAP {@link Metrics} object using which metrics can be emitted
+   * @param metrics    CDAP {@link Metrics} object using which metrics can be
+   *                   emitted
    */
   private void emitDirectiveMetrics(List<Directive> directives, Metrics metrics) {
     for (Directive directive : directives) {
@@ -682,7 +699,7 @@ public class Wrangler extends Transform<StructuredRecord, StructuredRecord> impl
 
   private EntityCountMetric getDirectiveUsageMetric(String directiveName) {
     return new EntityCountMetric(
-      DIRECTIVE_METRIC_NAME, DIRECTIVE_ENTITY_TYPE, directiveName, DIRECTIVE_METRIC_COUNT);
+        DIRECTIVE_METRIC_NAME, DIRECTIVE_ENTITY_TYPE, directiveName, DIRECTIVE_METRIC_COUNT);
   }
 
   private Map<String, String> getEntityMetricTags(EntityCountMetric metricDef) {
@@ -717,13 +734,11 @@ public class Wrangler extends Transform<StructuredRecord, StructuredRecord> impl
     @Nullable
     private String precondition;
 
-
     @Name(NAME_PRECONDITION_SQL)
     @Description("SQL Precondition expression specifying filtering before applying directives (false to filter)")
     @Macro
     @Nullable
     private String preconditionSQL;
-
 
     @Name(NAME_DIRECTIVES)
     @Description("Recipe for wrangling the input records")
@@ -753,7 +768,7 @@ public class Wrangler extends Transform<StructuredRecord, StructuredRecord> impl
     private final String onError;
 
     public Config(String preconditionLanguage, String precondition, String directives, String udds,
-                  String field, String schema, String onError) {
+        String field, String schema, String onError) {
       this.preconditionLanguage = preconditionLanguage;
       this.precondition = precondition;
       this.directives = directives;
@@ -800,4 +815,3 @@ public class Wrangler extends Transform<StructuredRecord, StructuredRecord> impl
     }
   }
 }
-
